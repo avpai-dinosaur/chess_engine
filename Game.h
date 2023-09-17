@@ -29,6 +29,10 @@ public:
 		board.printBoard(cout);
 	}
 
+	vector<int> generateValidSquares(int piece, int position) {
+		
+	}
+
 	/* vector<int> generateValidSquares(char piece, int rowInitial, char colInitial) {
 		int arrayNumber = userSquareInputToArrayNumber(rowInitial, colInitial);
 		vector<int> validSquares;
@@ -921,7 +925,7 @@ Game::~Game()
 {
 }
 
-int decodePiece(char piece) {
+/*int decodePiece(char piece) {
 	switch (piece)
 	{
 	case 'K':
@@ -966,4 +970,4 @@ int decodePiece(char piece) {
 		break;
 	}
 	return 0;
-}
+} */
