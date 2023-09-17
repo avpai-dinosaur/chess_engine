@@ -1,8 +1,6 @@
 #include "Board.h"
 #include <cassert>
 
-int decodePiece(char piece);
-
 class Game
 {
 public:

@@ -39,6 +39,7 @@ public:
 	char printPiece(int piece);
 	void printBoard(ostream &os);	
 	void movePiece(int initial, int destination);
+	vector<int> squaresSeen(int piece, int position);
 };
 
 Board::Board()
@@ -122,25 +123,35 @@ char Board::printPiece(int piece) {
 		}
 	}
 
-	void Board::printBoard(ostream &os) {
-		os << " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _" << endl;
-		for (auto row = 7; row > 0; --row) {
-			os << "|" << row + 1 << "    |     |     |     |     |     |     |     |" << endl;
-			for (auto column = 0; column < 8; ++column) {
-				os << "|  " << printPiece(boardArray[(8 * row) + column]) << "  ";
-			}
-			os << "|" << endl;
-			os << "|_ _ _|_ _ _|_ _ _|_ _ _|_ _ _|_ _ _|_ _ _|_ _ _|" << endl;
-		}
-		os << "|" << 1 << "    |     |     |     |     |     |     |     |" << endl;
+void Board::printBoard(ostream &os) {
+	os << " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _" << endl;
+	for (auto row = 7; row > 0; --row) {
+		os << "|" << row + 1 << "    |     |     |     |     |     |     |     |" << endl;
 		for (auto column = 0; column < 8; ++column) {
-			os << "|  " << printPiece(boardArray[column]) << "  ";
+			os << "|  " << printPiece(boardArray[(8 * row) + column]) << "  ";
 		}
 		os << "|" << endl;
-		os << "|_ _ a|_ _ b|_ _ c|_ _ d|_ _ e|_ _ f|_ _ g|_ _ h|" << endl;
+		os << "|_ _ _|_ _ _|_ _ _|_ _ _|_ _ _|_ _ _|_ _ _|_ _ _|" << endl;
 	}
+	os << "|" << 1 << "    |     |     |     |     |     |     |     |" << endl;
+	for (auto column = 0; column < 8; ++column) {
+		os << "|  " << printPiece(boardArray[column]) << "  ";
+	}
+	os << "|" << endl;
+	os << "|_ _ a|_ _ b|_ _ c|_ _ d|_ _ e|_ _ f|_ _ g|_ _ h|" << endl;
+}
 
-	void Board::movePiece(int initial, int destination) {
-		boardArray[destination] = boardArray[initial];
-		boardArray[initial] = Pieces::NO_PIECE;
-	}
+void Board::movePiece(int initial, int destination) {
+	boardArray[destination] = boardArray[initial];
+	boardArray[initial] = Pieces::NO_PIECE;
+}
+
+// Input: A piece and its position on the board.
+// Output: a vector of ints that represents the squares the inputted
+//	       piece can "see". 
+// Note: We treat the piece as if it is the only piece on the board.
+vector<int> Board::squaresSeen(int piece, int position) {
+	// if piece is a sliding piece
+	// if piece is a horse
+	// if piece is a pawn
+}
