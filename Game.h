@@ -1,22 +1,37 @@
 #include "Board.h"
 #include <cassert>
 
+int decodePiece(char piece);
+
 class Game
 {
 public:
 	Game();
 	~Game();
 
-	int userSquareInputToArrayNumber(int row, char col) {
+	Board board;
+
+	int coordinateToArrayNumber(int row, char col) {
 		return (8 * (row - 1)) + (col - 97);
 	}
 
-	vector<int> generateKnightMoves(int rowInitial, char colInitial) {
+	/* vector<int> generateKnightMoves(int rowInitial, char colInitial) {
 		int arrayNumber = userSquareInputToArrayNumber(rowInitial, colInitial);
+		return;
+	} */
 
+	void start() {
+		board.printBoard(cout);
 	}
 
-	vector<int> generateValidSquares(char piece, int rowInitial, char colInitial) {
+	void move(char pieceChar, int rowInitial, int colInitial, int rowDestination, int colDestination) {
+		int initial = coordinateToArrayNumber(rowInitial, colInitial);
+		int destination = coordinateToArrayNumber(rowDestination, colDestination);
+		board.movePiece(initial, destination);
+		board.printBoard(cout);
+	}
+
+	/* vector<int> generateValidSquares(char piece, int rowInitial, char colInitial) {
 		int arrayNumber = userSquareInputToArrayNumber(rowInitial, colInitial);
 		vector<int> validSquares;
 		
@@ -881,11 +896,11 @@ public:
 		}
 
 		return validSquares;
-	}
+	} */
 
 	// Returns true if a piece move is allowed. Returns false otherwise.
 	// Inputs: piece, initial square, destination square
-	bool isValidMove(char piece, int rowInitial, char colInitial, int rowDestination, char colDestination) {
+	/* bool isValidMove(char piece, int rowInitial, char colInitial, int rowDestination, char colDestination) {
 		// first generate squares this piece can reach
 		vector<int> validSquares = generateValidSquares(piece, rowInitial, colInitial);
 		int destinationArrayNumber = userSquareInputToArrayNumber(rowDestination, colDestination);
@@ -896,32 +911,8 @@ public:
 		}
 
 		return false;
-	}
+	} */
 
-	void humanMove(char piece, int rowInitial, char colInitial, int rowDestination, char colDestination) {
-		int arrayNumberInitial = userSquareInputToArrayNumber(rowInitial, colInitial);
-		int arrayNumberDestination = userSquareInputToArrayNumber(rowDestination, colDestination);
-		
-		if (!isValidMove(piece, rowInitial, colInitial, rowDestination, colDestination)) {
-			cout << "Not a valid move!" << endl;
-			return;
-		}
-		
-		board.boardArray[arrayNumberInitial] = ' ';
-		board.boardColor[arrayNumberInitial] = PieceColor::noColor;
-		
-		board.boardArray[arrayNumberDestination] = piece;
-		if (piece < 97) {
-			board.boardColor[arrayNumberDestination] = PieceColor::white;
-		}
-		else {
-			board.boardColor[arrayNumberDestination] = PieceColor::black;
-		}
-
-		return;
-	}
-
-	Board board;
 };
 
 Game::Game()
@@ -930,4 +921,51 @@ Game::Game()
 
 Game::~Game()
 {
+}
+
+int decodePiece(char piece) {
+	switch (piece)
+	{
+	case 'K':
+		return Pieces::WHITE_KING;
+		break;
+	case 'Q':
+		return Pieces::WHITE_QUEEN;
+		break;
+	case 'R':
+		return Pieces::WHITE_ROOK;
+		break;
+	case 'B':
+		return Pieces::WHITE_BISHOP;
+		break;
+	case 'N':
+		return Pieces::WHITE_KNIGHT;
+		break;
+	case 'P':
+		return Pieces::WHITE_PAWN;
+		break;
+	case 'k':
+		return Pieces::BLACK_KING;
+		break;
+	case 'q':
+		return Pieces::BLACK_QUEEN;
+		break;
+	case 'r':
+		return Pieces::BLACK_ROOK;
+		break;
+	case 'b':
+		return Pieces::BLACK_BISHOP;
+		break;
+	case 'n':
+		return Pieces::BLACK_KNIGHT;
+		break;
+	case 'p':
+		return Pieces::BLACK_PAWN;
+		break;
+	default:
+		cout << "error: not a valid piece" << endl;
+		exit(-1);
+		break;
+	}
+	return 0;
 }
