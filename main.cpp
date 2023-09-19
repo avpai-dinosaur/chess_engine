@@ -13,7 +13,6 @@ int main() {
 	int rowDestination;
 	char colDestination;
 
-	game.start();
 	while (true) {
 		cout << "Enter move (Ex: P d2 d3): " << endl;
 		cin >> piece >> colInitial >> rowInitial;
@@ -25,7 +24,7 @@ int main() {
 		// else {
 		// 	game.humanMove(piece, rowInitial, colInitial, rowDestination, colDestination);
 		// }
-		game.move(piece, rowInitial, colInitial, rowDestination, colDestination);
+		game.move(rowInitial, colInitial, rowDestination, colDestination);
 	}
 	
 	return 0;

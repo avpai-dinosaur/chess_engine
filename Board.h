@@ -23,6 +23,10 @@ namespace Pieces {
 
 	// no piece
 	const int NO_PIECE = 0b1111;
+
+	// colors
+	const int BLACK = 1;
+	const int WHITE = 0;
 }
 
 
@@ -31,15 +35,16 @@ class Board
 public:
 	Board();
 	~Board();
+	Board(const Board& b1);
 	
 	int boardArray[64];
-	int blackPieces[16]; // array of what squares are occupied by black pieces
-	int whitePieces[16]; // array of what squares are occupied by white pices
+	vector<int> blackPieces[16]; // array of what squares are occupied by black pieces
+	vector<int> whitePieces[16]; // array of what squares are occupied by white pices
 
 	char printPiece(int piece);
 	void printBoard(ostream &os);	
 	void movePiece(int initial, int destination);
-	vector<int> squaresSeen(int piece, int position);
+	float evaluatePosition();
 };
 
 Board::Board()
@@ -76,6 +81,12 @@ Board::Board()
 
 Board::~Board()
 {
+}
+
+Board::Board(const Board& b1) {
+	for (int i = 0; i < 64; ++i) {
+		boardArray[i] = b1.boardArray[i];
+	}
 }
 
 char Board::printPiece(int piece) {
@@ -146,12 +157,6 @@ void Board::movePiece(int initial, int destination) {
 	boardArray[initial] = Pieces::NO_PIECE;
 }
 
-// Input: A piece and its position on the board.
-// Output: a vector of ints that represents the squares the inputted
-//	       piece can "see". 
-// Note: We treat the piece as if it is the only piece on the board.
-vector<int> Board::squaresSeen(int piece, int position) {
-	// if piece is a sliding piece
-	// if piece is a horse
-	// if piece is a pawn
+float evaluatePosition() {
+	return 0;
 }
