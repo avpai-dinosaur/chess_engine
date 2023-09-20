@@ -16,10 +16,10 @@ public:
 	}
 
 	// Creates a new board, makes move, then pushes on to history.
-	void move(int rowInitial, int colInitial, int rowDestination, int colDestination) {
+	void move(int rowInitial, char colInitial, int rowDestination, char colDestination) {
 		int initial = coordinateToArrayNumber(rowInitial, colInitial);
 		int destination = coordinateToArrayNumber(rowDestination, colDestination);
-		if (!isValidMove) {
+		if (!isValidMove(initial, destination)) {
 			cout << "Not valid move!" << endl;
 			return;
 		}
@@ -30,11 +30,26 @@ public:
 	}
 
 	vector<int> generateValidSquares(int piece, int position) {
+		if (piece == Pieces::BLACK_ROOK ||
+			piece == Pieces::WHITE_ROOK ||
+			piece == Pieces::BLACK_BISHOP ||
+			piece == Pieces::WHITE_BISHOP ||
+			piece == Pieces::BLACK_QUEEN ||
+			piece == Pieces::WHITE_QUEEN) {
+				return history.front().generateValidSquaresSlidingPiece(piece, position);
+			}
 		return {0};
 	}
 
 	bool isValidMove(int initial, int destination) {
-		return true;
+		int piece = history.front().getPiece(initial);
+		vector<int> validSquares = generateValidSquares(piece, initial);
+		for (size_t i = 0; i < validSquares.size(); ++i) {
+			if (validSquares[i] == destination) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 };

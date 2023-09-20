@@ -297,6 +297,8 @@ help:
 #
 # ADD YOUR OWN DEPENDENCIES HERE
 
+main.o: main.cpp Game.h Board.h
+
 ######################
 # TODO (end) #
 ######################
