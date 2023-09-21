@@ -225,6 +225,17 @@ void Board::generateAlongDirection(vector<int>& validSquares, int color, int pos
 	}
 } 
 
+vector<int> Board::generateValidSquaresPawn(int color, int position) {
+	if(color == Pieces::BLACK) {
+
+	}
+	else if (color == Pieces::WHITE) {
+
+	}
+	else {
+		std::cout << "Error: invalid color" << std::endl;
+	}
+}
 vector<int> Board::generateValidSquaresSlidingPiece(int piece, int position) {
 	vector<int> validSquares;
 	int color = getPieceColor(position);
