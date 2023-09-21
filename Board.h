@@ -226,16 +226,92 @@ void Board::generateAlongDirection(vector<int>& validSquares, int color, int pos
 } 
 
 vector<int> Board::generateValidSquaresPawn(int color, int position) {
+	int row = position / 8;
+	int col = position % 8;
+	vector<int> validSquares;
 	if(color == Pieces::BLACK) {
+		// if on starting position can move two squares
+		if (row == 6) {
+			int twoSquaresAheadColor = getPieceColor(position - 16);
+			if (twoSquaresAheadColor == Pieces::NO_COLOR) {
+				validSquares.push_back(position - 16);
+			}
+		}
 
+		// check square immediately in front
+		if (!(row == 0)) {
+			int squareAheadColor = getPieceColor(position - 8);
+			if (squareAheadColor == Pieces::NO_COLOR) {
+				validSquares.push_back(position - 8);
+			}
+		}
+		else {
+			return {}; // this would be an error
+		} 
+		
+		// check right diagonal square
+		if (!(col == 0)) {
+			int rightDiagonalColor = getPieceColor(position - 8 - 1);
+			if (rightDiagonalColor == Pieces::WHITE) {
+				validSquares.push_back(position - 8 - 1);
+			}
+		}
+
+		// check left diagonal square
+		if (!(col == 7)) {
+			int leftDiagonalColor = getPieceColor(position - 8 + 1);
+			if (leftDiagonalColor == Pieces::WHITE) {
+				validSquares.push_back(position - 8 + 1);
+			}
+
+		}
+
+		return validSquares;
 	}
 	else if (color == Pieces::WHITE) {
+		// if on starting position can move two squares
+		if (row == 1) {
+			int twoSquaresAheadColor = getPieceColor(position + 16);
+			if (twoSquaresAheadColor == Pieces::NO_COLOR) {
+				validSquares.push_back(position + 16);
+			}
+		}
 
+		// check square immediately in front
+		if (!(row == 7)) {
+			int squareAheadColor = getPieceColor(position + 8);
+			if (squareAheadColor == Pieces::NO_COLOR) {
+				validSquares.push_back(position + 8);
+			}
+		}
+		else {
+			return {}; // this would be an error
+		} 
+		
+		// check right diagonal square
+		if (!(col == 7)) {
+			int rightDiagonalColor = getPieceColor(position + 8 + 1);
+			if (rightDiagonalColor == Pieces::BLACK) {
+				validSquares.push_back(position + 8 + 1);
+			}
+		}
+
+		// check left diagonal square
+		if (!(col == 0)) {
+			int leftDiagonalColor = getPieceColor(position + 8 - 1);
+			if (leftDiagonalColor == Pieces::BLACK) {
+				validSquares.push_back(position + 8 - 1);
+			}
+		}
+
+		return validSquares;
 	}
 	else {
 		std::cout << "Error: invalid color" << std::endl;
+		return {};
 	}
 }
+
 vector<int> Board::generateValidSquaresSlidingPiece(int piece, int position) {
 	vector<int> validSquares;
 	int color = getPieceColor(position);

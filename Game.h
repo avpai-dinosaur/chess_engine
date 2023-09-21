@@ -38,7 +38,12 @@ public:
 			piece == Pieces::WHITE_QUEEN) {
 				return history.front().generateValidSquaresSlidingPiece(piece, position);
 			}
-		return {0};
+		if (piece == Pieces::WHITE_PAWN ||
+			piece == Pieces::BLACK_PAWN) {
+				int color = piece >> 3;
+				return history.front().generateValidSquaresPawn(color, position);
+			}
+		return {};
 	}
 
 	bool isValidMove(int initial, int destination) {
