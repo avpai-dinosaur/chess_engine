@@ -62,6 +62,7 @@ public:
 	float evaluatePosition();
 	int getPiece(int position);
 	int getPieceColor(int position);
+	bool checkFriendly(int color, int destination);
 	void generateAlongDirection(vector<int>& validSquares, int color, int position, int offset, int *distanceMatrix);
 	vector<int> generateValidSquaresSlidingPiece(int piece, int position);
 	vector<int> generateValidSquaresHorse(int color, int position);
@@ -225,6 +226,97 @@ void Board::generateAlongDirection(vector<int>& validSquares, int color, int pos
 	}
 } 
 
+vector<int> Board::generateValidSquaresSlidingPiece(int piece, int position) {
+	vector<int> validSquares;
+	int color = getPieceColor(position);
+	if (piece == Pieces::BLACK_ROOK || piece == Pieces::WHITE_ROOK) {
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_STRAIGHT, distanceToBottomEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::UP_STRAIGHT, distanceToTopEdge);
+		return validSquares;
+	}
+	else if (piece == Pieces::BLACK_BISHOP || piece == Pieces::WHITE_BISHOP) {
+		generateAlongDirection(validSquares, color, position, Offsets::UP_LEFT, distanceToLeftEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::UP_RIGHT, distanceToRightEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_LEFT, distanceToLeftEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_RIGHT, distanceToRightEdge);
+		return validSquares;
+	}
+	else {
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_STRAIGHT, distanceToBottomEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::UP_STRAIGHT, distanceToTopEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::UP_LEFT, distanceToLeftEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::UP_RIGHT, distanceToRightEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_LEFT, distanceToLeftEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_RIGHT, distanceToRightEdge);
+		return validSquares;
+	}
+}
+
+// helper function
+bool Board::checkFriendly(int color, int destination) {
+	if (getPieceColor(destination) == color) {
+		return false;
+	}
+	return true;
+}
+
+vector<int> Board::generateValidSquaresHorse(int color, int position) {
+	int row = position / 8;
+	int column = position % 8;
+
+	const int SHORT_LEFT_UP = position + 8 - 2;
+	const int SHORT_LEFT_DOWN = position - 8 - 2;
+	const int LONG_LEFT_UP = position + 16 - 1;
+	const int LONG_LEFT_DOWN = position - 16 - 1;
+
+	const int SHORT_RIGHT_UP = position + 8 + 2;
+	const int SHORT_RIGHT_DOWN = position - 8 + 2;
+	const int LONG_RIGHT_UP = position + 16 + 1;
+	const int LONG_RIGHT_DOWN = position - 16 + 1;
+
+	vector<int> possibleKnightMoves {SHORT_LEFT_UP, SHORT_LEFT_DOWN, LONG_LEFT_UP, LONG_LEFT_DOWN,
+									SHORT_RIGHT_UP, SHORT_RIGHT_DOWN, LONG_RIGHT_UP, LONG_RIGHT_DOWN};
+	
+	vector<int> validMoves;
+
+	for (int move : possibleKnightMoves) {
+		if ((move < 0) || (move > 63)) { // off the board
+			continue;
+		}
+
+		if (move == SHORT_LEFT_UP) {
+			if (row > 6 || column < 2) continue;
+		}
+		else if (move == SHORT_LEFT_DOWN) {
+			if (row < 1 || column < 2) continue;
+		}
+		else if (move == LONG_LEFT_UP) {
+			if (row > 5 || column < 1) continue;
+		}
+		else if (move == LONG_LEFT_DOWN) {
+			if (row < 2 || column < 1) continue;
+		}
+		else if (move == SHORT_RIGHT_UP) {
+			if (row > 6 || column > 5) continue;
+		}
+		else if (move == SHORT_RIGHT_DOWN) {
+			if (row < 1 || column > 5) continue;
+		}
+		else if (move == LONG_RIGHT_UP) {
+			if (row > 5 || column > 6) continue;
+		}
+		else { // move == LONG_RIGHT_DOWN
+			if (row < 2 || column > 6) continue;
+		}
+		
+		if (checkFriendly(color, move)) {
+			validMoves.push_back(move);
+		}
+	}
+
+	return validMoves;
+}
+
 vector<int> Board::generateValidSquaresPawn(int color, int position) {
 	int row = position / 8;
 	int col = position % 8;
@@ -309,31 +401,5 @@ vector<int> Board::generateValidSquaresPawn(int color, int position) {
 	else {
 		std::cout << "Error: invalid color" << std::endl;
 		return {};
-	}
-}
-
-vector<int> Board::generateValidSquaresSlidingPiece(int piece, int position) {
-	vector<int> validSquares;
-	int color = getPieceColor(position);
-	if (piece == Pieces::BLACK_ROOK || piece == Pieces::WHITE_ROOK) {
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_STRAIGHT, distanceToBottomEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::UP_STRAIGHT, distanceToTopEdge);
-		return validSquares;
-	}
-	else if (piece == Pieces::BLACK_BISHOP || piece == Pieces::WHITE_BISHOP) {
-		generateAlongDirection(validSquares, color, position, Offsets::UP_LEFT, distanceToLeftEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::UP_RIGHT, distanceToRightEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_LEFT, distanceToLeftEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_RIGHT, distanceToRightEdge);
-		return validSquares;
-	}
-	else {
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_STRAIGHT, distanceToBottomEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::UP_STRAIGHT, distanceToTopEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::UP_LEFT, distanceToLeftEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::UP_RIGHT, distanceToRightEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_LEFT, distanceToLeftEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_RIGHT, distanceToRightEdge);
-		return validSquares;
 	}
 }

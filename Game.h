@@ -37,12 +37,17 @@ public:
 			piece == Pieces::BLACK_QUEEN ||
 			piece == Pieces::WHITE_QUEEN) {
 				return history.front().generateValidSquaresSlidingPiece(piece, position);
-			}
-		if (piece == Pieces::WHITE_PAWN ||
-			piece == Pieces::BLACK_PAWN) {
+		}
+
+		if (piece == Pieces::WHITE_PAWN || piece == Pieces::BLACK_PAWN) {
 				int color = piece >> 3;
 				return history.front().generateValidSquaresPawn(color, position);
-			}
+		}
+
+		if (piece == Pieces::WHITE_KNIGHT || piece == Pieces::BLACK_KNIGHT) {
+			int color = piece >> 3;
+			return history.front().generateValidSquaresHorse(color, position);
+		}
 		return {};
 	}
 
