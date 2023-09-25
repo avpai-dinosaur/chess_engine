@@ -32,11 +32,13 @@ namespace Pieces {
 
 namespace Offsets {
 	const int UP_LEFT = 7;
-	const int DOWN_LEFT = -7;
+	const int DOWN_LEFT = -9;
 	const int UP_RIGHT = 9;
-	const int DOWN_RIGHT = -9;
+	const int DOWN_RIGHT = -7;
 	const int UP_STRAIGHT = 8;
-	const int DOWN_STRAIGHT = 8;
+	const int DOWN_STRAIGHT = -8;
+	const int LEFT_STRAIGHT = -1;
+	const int RIGHT_STRAIGHT = 1;
 }
 
 class Board
@@ -112,6 +114,8 @@ Board::Board(const Board& b1) {
 	for (int i = 0; i < 64; ++i) {
 		boardArray[i] = b1.boardArray[i];
 	}
+
+	calculateDistanceArrays();
 }
 
 void Board::calculateDistanceArrays() {
@@ -210,8 +214,11 @@ int Board::getPieceColor(int position) {
 }
 
 void Board::generateAlongDirection(vector<int>& validSquares, int color, int position, int offset, int *distanceMatrix) {
-	for (int i = 0; i < distanceMatrix[position]; ++i) {
+	for (int i = 1; i <= distanceMatrix[position]; ++i) {
 		int potentialSquare = position + (offset * i);
+		if (potentialSquare < 0 || potentialSquare > 63) {
+			break;
+		}
 		int potentialSquarePieceColor = getPieceColor(potentialSquare);
 		if (potentialSquarePieceColor == color) {
 			break;
@@ -232,6 +239,8 @@ vector<int> Board::generateValidSquaresSlidingPiece(int piece, int position) {
 	if (piece == Pieces::BLACK_ROOK || piece == Pieces::WHITE_ROOK) {
 		generateAlongDirection(validSquares, color, position, Offsets::DOWN_STRAIGHT, distanceToBottomEdge);
 		generateAlongDirection(validSquares, color, position, Offsets::UP_STRAIGHT, distanceToTopEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::LEFT_STRAIGHT, distanceToLeftEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::RIGHT_STRAIGHT, distanceToRightEdge);
 		return validSquares;
 	}
 	else if (piece == Pieces::BLACK_BISHOP || piece == Pieces::WHITE_BISHOP) {
@@ -248,6 +257,8 @@ vector<int> Board::generateValidSquaresSlidingPiece(int piece, int position) {
 		generateAlongDirection(validSquares, color, position, Offsets::UP_RIGHT, distanceToRightEdge);
 		generateAlongDirection(validSquares, color, position, Offsets::DOWN_LEFT, distanceToLeftEdge);
 		generateAlongDirection(validSquares, color, position, Offsets::DOWN_RIGHT, distanceToRightEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::LEFT_STRAIGHT, distanceToLeftEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::RIGHT_STRAIGHT, distanceToRightEdge);
 		return validSquares;
 	}
 }
@@ -305,7 +316,7 @@ vector<int> Board::generateValidSquaresHorse(int color, int position) {
 		else if (move == LONG_RIGHT_UP) {
 			if (row > 5 || column > 6) continue;
 		}
-		else { // move == LONG_RIGHT_DOWN
+		else if (move == LONG_RIGHT_DOWN) {
 			if (row < 2 || column > 6) continue;
 		}
 		
