@@ -6,6 +6,7 @@ class Game
 {
 public:
 	Game();
+	Game(const string& FEN);
 	~Game();
 
 	int playerTurn;
@@ -64,10 +65,25 @@ public:
 
 };
 
-Game::Game()
-{
+Game::Game() {
 	playerTurn = Pieces::WHITE;
 	Board board;
+	history.push_back(board);
+	history.front().printBoard(cout);
+}
+
+Game::Game(const string& FEN) {
+	int endOfBoard = 0;
+	for (size_t i = 0; i < FEN.size(); ++i) {
+		if(FEN[i] == ' ') {
+			endOfBoard = i;
+			break;
+		}
+	}
+
+	FEN[endOfBoard + 1] == 'w' ? playerTurn = Pieces::WHITE : playerTurn = Pieces::BLACK;
+    
+	Board board(FEN);
 	history.push_back(board);
 	history.front().printBoard(cout);
 }

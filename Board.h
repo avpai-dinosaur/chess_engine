@@ -45,8 +45,9 @@ class Board
 {
 public:
 	Board();
-	~Board();
+	Board(const string& FEN);
 	Board(const Board& b1);
+	~Board();
 	
 	int boardArray[64];
 	vector<int> blackPieces[16]; // array of what squares are occupied by black pieces
@@ -55,9 +56,9 @@ public:
 	int distanceToRightEdge[64];
 	int distanceToTopEdge[64];
 	int distanceToBottomEdge[64];
+
 	void calculateDistanceArrays();
-
-
+	int charToPiece(char symbol);
 	char printPiece(int piece);
 	void printBoard(ostream &os);	
 	void movePiece(int initial, int destination);
@@ -106,9 +107,38 @@ Board::Board()
 	calculateDistanceArrays();
 }
 
-Board::~Board()
-{
+Board::Board(const string& FEN) {
+	int row = 7; 
+	int col = 0;
+	for (size_t i = 0; i < FEN.size(); ++i) {
+		if (FEN[i] == ' ') {
+			break;
+		}
+
+		if (FEN[i] == '/') {
+			--row;
+			col = 0;
+			continue;
+		}
+
+		if (48 <= FEN[i] && FEN[i] <= 57) {
+			int x = int(FEN[i]) - 48;
+			std::cout << x << endl;
+			for (int j = 0; j < int(FEN[i]) - 48; ++j) {
+				boardArray[row * 8 + col] = Pieces::NO_PIECE;
+				++col;
+			}
+			continue;
+		}
+		
+		boardArray[8 * row + col] = charToPiece(FEN[i]);
+		++col;
+	}
+
+	calculateDistanceArrays();
 }
+
+
 
 Board::Board(const Board& b1) {
 	for (int i = 0; i < 64; ++i) {
@@ -116,6 +146,10 @@ Board::Board(const Board& b1) {
 	}
 
 	calculateDistanceArrays();
+}
+
+Board::~Board()
+{
 }
 
 void Board::calculateDistanceArrays() {
@@ -128,6 +162,53 @@ void Board::calculateDistanceArrays() {
 		Board::distanceToBottomEdge[i] = row;
 	}
 }
+
+int Board::charToPiece(char symbol) {
+	switch (symbol)
+	{
+	case 'K':
+		return Pieces::WHITE_KING;
+		break;
+	case 'Q':
+		return Pieces::WHITE_QUEEN;
+		break;
+	case 'R':
+		return Pieces::WHITE_ROOK;
+		break;
+	case 'B':
+		return Pieces::WHITE_BISHOP;
+		break;
+	case 'N':
+		return Pieces::WHITE_KNIGHT;
+		break;
+	case 'P':
+		return Pieces::WHITE_PAWN;
+		break;
+	case 'k':
+		return Pieces::BLACK_KING;
+		break;
+	case 'q':
+		return Pieces::BLACK_QUEEN;
+		break;
+	case 'r':
+		return Pieces::BLACK_ROOK;
+		break;
+	case 'b':
+		return Pieces::BLACK_BISHOP;
+		break;
+	case 'n':
+		return Pieces::BLACK_KNIGHT;
+		break;
+	case 'p':
+		return Pieces::BLACK_PAWN;
+		break;
+	default:
+		cout << "Error, undefined piece" << endl;
+		exit(1);
+		break;
+	}
+}
+
 
 char Board::printPiece(int piece) {
 		switch (piece)

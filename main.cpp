@@ -5,7 +5,8 @@
 using namespace std;
 
 int main() {
-	Game game;
+	const string FEN = "2k5/8/8/8/8/3B4/K1B5/3R4 w - - 0 1";
+	Game game(FEN);
 	
 	char piece;
 	int rowInitial;
@@ -17,13 +18,6 @@ int main() {
 		cout << "Enter move (Ex: P d2 d3): " << endl;
 		cin >> piece >> colInitial >> rowInitial;
 		cin >> colDestination >> rowDestination;
-		// if (!game.isValidMove(piece, rowInitial, colInitial, rowDestination, colDestination)) {
-		// 	cout << "Not a valid move!" << endl;
-		// 	continue;
-		// }
-		// else {
-		// 	game.humanMove(piece, rowInitial, colInitial, rowDestination, colDestination);
-		// }
 		game.move(rowInitial, colInitial, rowDestination, colDestination);
 	}
 	
