@@ -50,14 +50,16 @@ public:
 	~Board();
 	
 	int boardArray[64];
-	vector<int> blackPieces[16]; // array of what squares are occupied by black pieces
-	vector<int> whitePieces[16]; // array of what squares are occupied by white pices
 	int distanceToLeftEdge[64];
 	int distanceToRightEdge[64];
 	int distanceToTopEdge[64];
 	int distanceToBottomEdge[64];
+	bool attackedSquaresWhite[64] = {false};
+	bool attackedSquaresBlack[64] = {false};
 
 	void calculateDistanceArrays();
+	void calculateAttackedSquaresWhite();
+	void calculateAttackedSquaresBlack();
 	int charToPiece(char symbol);
 	char printPiece(int piece);
 	void printBoard(ostream &os);	
@@ -65,10 +67,11 @@ public:
 	float evaluatePosition();
 	int getPiece(int position);
 	int getPieceColor(int position);
-	bool checkFriendly(int color, int destination);
-	void generateAlongDirection(vector<int>& validSquares, int color, int position, int offset, int *distanceMatrix);
-	vector<int> generateValidSquaresSlidingPiece(int piece, int position);
-	vector<int> generateValidSquaresHorse(int color, int position);
+	bool isFriendly(int color, int destination);
+	bool isAttackedSquare(int color, int square);
+	void generateAlongDirection(vector<int>& validSquares, int color, int position, int offset, int *distanceMatrix, string mode);
+	vector<int> generateValidSquaresSlidingPiece(int piece, int position, string mode);
+	vector<int> generateValidSquaresHorse(int color, int position, string mode);
 	vector<int> generateValidSquaresPawn(int color, int position);
 	vector<int> generateValidSquaresKing(int color, int position);
 };
@@ -105,6 +108,8 @@ Board::Board()
 	}
 
 	calculateDistanceArrays();
+	calculateAttackedSquaresWhite();
+	calculateAttackedSquaresBlack();
 }
 
 Board::Board(const string& FEN) {
@@ -122,8 +127,8 @@ Board::Board(const string& FEN) {
 		}
 
 		if (48 <= FEN[i] && FEN[i] <= 57) {
-			int x = int(FEN[i]) - 48;
-			std::cout << x << endl;
+			// int x = int(FEN[i]) - 48;
+			// std::cout << x << endl;
 			for (int j = 0; j < int(FEN[i]) - 48; ++j) {
 				boardArray[row * 8 + col] = Pieces::NO_PIECE;
 				++col;
@@ -136,9 +141,9 @@ Board::Board(const string& FEN) {
 	}
 
 	calculateDistanceArrays();
+	calculateAttackedSquaresWhite();
+	calculateAttackedSquaresBlack();
 }
-
-
 
 Board::Board(const Board& b1) {
 	for (int i = 0; i < 64; ++i) {
@@ -146,6 +151,8 @@ Board::Board(const Board& b1) {
 	}
 
 	calculateDistanceArrays();
+	calculateAttackedSquaresWhite();
+	calculateAttackedSquaresBlack();
 }
 
 Board::~Board()
@@ -160,6 +167,98 @@ void Board::calculateDistanceArrays() {
 		Board::distanceToRightEdge[i] = 7 - col;
 		Board::distanceToTopEdge[i] = 7 - row;
 		Board::distanceToBottomEdge[i] = row;
+	}
+}
+
+void Board::calculateAttackedSquaresWhite() {
+	vector<vector<int>> attackedSquares;
+	for (int i = 0; i < 64; ++i) {
+		vector<int> squares;
+		switch (boardArray[i])
+		{
+		case Pieces::WHITE_QUEEN:
+			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			break;
+		case Pieces::WHITE_ROOK:
+			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			break;
+		case Pieces::WHITE_BISHOP:
+			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			break;
+		case Pieces::WHITE_KNIGHT:
+			squares = generateValidSquaresHorse(boardArray[i], i, "attacked");
+			break;
+		case Pieces::WHITE_PAWN:
+			if (56 <= i && i <= 63) {
+				break;
+			}
+			if (i % 8 == 0) {
+				squares.push_back(i + Offsets::UP_RIGHT);
+				break;
+			}
+			if (i % 8 == 7) {
+				squares.push_back(i + Offsets::UP_LEFT);
+				break;
+			}
+			squares.push_back(i + Offsets::UP_RIGHT);
+			squares.push_back(i + Offsets::UP_LEFT);
+			break;
+		default:
+			break;
+		}
+		attackedSquares.push_back(squares);
+	}
+
+	for (size_t i = 0; i < attackedSquares.size(); ++i) {
+		for (size_t j = 0; j < attackedSquares[i].size(); ++j) {
+			attackedSquaresWhite[attackedSquares[i][j]] = true;
+		}
+	}
+}
+
+void Board::calculateAttackedSquaresBlack() {
+	vector<vector<int>> attackedSquares;
+	for (int i = 0; i < 64; ++i) {
+		vector<int> squares;
+		switch (boardArray[i])
+		{
+		case Pieces::BLACK_QUEEN:
+			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			break;
+		case Pieces::BLACK_ROOK:
+			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			break;
+		case Pieces::BLACK_BISHOP:
+			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			break;
+		case Pieces::BLACK_KNIGHT:
+			squares = generateValidSquaresHorse(boardArray[i], i, "attacked");
+			break;
+		case Pieces::BLACK_PAWN:
+			if (0 <= i && i <= 7) {
+				break;
+			}
+			if (i % 8 == 0) {
+				squares.push_back(i + Offsets::DOWN_LEFT);
+				break;
+			}
+			if (i % 8 == 7) {
+				squares.push_back(i + Offsets::DOWN_RIGHT);
+				break;
+			}
+			squares.push_back(i + Offsets::DOWN_LEFT);
+			squares.push_back(i + Offsets::DOWN_RIGHT);
+			break;
+		default:
+			break;
+		}
+		attackedSquares.push_back(squares);
+	}
+
+	for (size_t i = 0; i < attackedSquares.size(); ++i) {
+		for (size_t j = 0; j < attackedSquares[i].size(); ++j) {
+			attackedSquaresBlack[attackedSquares[i][j]] = true;
+		}
 	}
 }
 
@@ -208,7 +307,6 @@ int Board::charToPiece(char symbol) {
 		break;
 	}
 }
-
 
 char Board::printPiece(int piece) {
 		switch (piece)
@@ -294,14 +392,36 @@ int Board::getPieceColor(int position) {
 	return piece >> 3;
 }
 
-void Board::generateAlongDirection(vector<int>& validSquares, int color, int position, int offset, int *distanceMatrix) {
+// helper function, returns true if the destination square
+// contains a friendly piece 
+bool Board::isFriendly(int color, int destination) {
+	if (getPieceColor(destination) == color) {
+		return true;
+	}
+	return false;
+}
+
+bool Board::isAttackedSquare(int color, int square) {
+	if (color == Pieces::BLACK) {
+		return attackedSquaresWhite[square];
+	}
+	else {
+		return attackedSquaresBlack[square];
+	}
+}
+
+void Board::generateAlongDirection(vector<int>& validSquares, int color, int position, int offset, int *distanceMatrix, string mode) {
 	for (int i = 1; i <= distanceMatrix[position]; ++i) {
 		int potentialSquare = position + (offset * i);
 		if (potentialSquare < 0 || potentialSquare > 63) {
 			break;
 		}
 		int potentialSquarePieceColor = getPieceColor(potentialSquare);
-		if (potentialSquarePieceColor == color) {
+		if (potentialSquarePieceColor == color && mode == "valid") {
+			break;
+		}
+		else if (potentialSquarePieceColor == color && mode == "attacked") {
+			validSquares.push_back(potentialSquare);
 			break;
 		}
 		else if (potentialSquarePieceColor == !color) {
@@ -314,45 +434,37 @@ void Board::generateAlongDirection(vector<int>& validSquares, int color, int pos
 	}
 } 
 
-vector<int> Board::generateValidSquaresSlidingPiece(int piece, int position) {
+vector<int> Board::generateValidSquaresSlidingPiece(int piece, int position, string mode) {
 	vector<int> validSquares;
 	int color = getPieceColor(position);
 	if (piece == Pieces::BLACK_ROOK || piece == Pieces::WHITE_ROOK) {
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_STRAIGHT, distanceToBottomEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::UP_STRAIGHT, distanceToTopEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::LEFT_STRAIGHT, distanceToLeftEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::RIGHT_STRAIGHT, distanceToRightEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_STRAIGHT, distanceToBottomEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::UP_STRAIGHT, distanceToTopEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::LEFT_STRAIGHT, distanceToLeftEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::RIGHT_STRAIGHT, distanceToRightEdge, mode);
 		return validSquares;
 	}
 	else if (piece == Pieces::BLACK_BISHOP || piece == Pieces::WHITE_BISHOP) {
-		generateAlongDirection(validSquares, color, position, Offsets::UP_LEFT, distanceToLeftEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::UP_RIGHT, distanceToRightEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_LEFT, distanceToLeftEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_RIGHT, distanceToRightEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::UP_LEFT, distanceToLeftEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::UP_RIGHT, distanceToRightEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_LEFT, distanceToLeftEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_RIGHT, distanceToRightEdge, mode);
 		return validSquares;
 	}
 	else {
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_STRAIGHT, distanceToBottomEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::UP_STRAIGHT, distanceToTopEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::UP_LEFT, distanceToLeftEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::UP_RIGHT, distanceToRightEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_LEFT, distanceToLeftEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::DOWN_RIGHT, distanceToRightEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::LEFT_STRAIGHT, distanceToLeftEdge);
-		generateAlongDirection(validSquares, color, position, Offsets::RIGHT_STRAIGHT, distanceToRightEdge);
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_STRAIGHT, distanceToBottomEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::UP_STRAIGHT, distanceToTopEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::UP_LEFT, distanceToLeftEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::UP_RIGHT, distanceToRightEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_LEFT, distanceToLeftEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::DOWN_RIGHT, distanceToRightEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::LEFT_STRAIGHT, distanceToLeftEdge, mode);
+		generateAlongDirection(validSquares, color, position, Offsets::RIGHT_STRAIGHT, distanceToRightEdge, mode);
 		return validSquares;
 	}
 }
 
-// helper function
-bool Board::checkFriendly(int color, int destination) {
-	if (getPieceColor(destination) == color) {
-		return false;
-	}
-	return true;
-}
-
-vector<int> Board::generateValidSquaresHorse(int color, int position) {
+vector<int> Board::generateValidSquaresHorse(int color, int position, string mode) {
 	int row = position / 8;
 	int column = position % 8;
 
@@ -401,7 +513,10 @@ vector<int> Board::generateValidSquaresHorse(int color, int position) {
 			if (row < 2 || column > 6) continue;
 		}
 		
-		if (checkFriendly(color, move)) {
+		if (!isFriendly(color, move)) {
+			validMoves.push_back(move);
+		}
+		if (isFriendly(color, move) && mode == "attacked") {
 			validMoves.push_back(move);
 		}
 	}
@@ -494,4 +609,59 @@ vector<int> Board::generateValidSquaresPawn(int color, int position) {
 		std::cout << "Error: invalid color" << std::endl;
 		return {};
 	}
+}
+
+vector<int> Board::generateValidSquaresKing(int color, int position) {
+	const int UP = 1;
+	const int DOWN = 2;
+	const int LEFT = 3;
+	const int RIGHT = 4;
+	const int UP_LEFT = 5;
+	const int UP_RIGHT = 6;
+	const int DOWN_LEFT = 7;
+	const int DOWN_RIGHT = 8; 
+	vector<pair<int, bool>> moves(8);
+	moves[UP] = {Offsets::UP_STRAIGHT, true};
+	moves[DOWN] = {Offsets::DOWN_STRAIGHT, true};
+	moves[LEFT] = {Offsets::LEFT_STRAIGHT, true};
+	moves[RIGHT] = {Offsets::RIGHT_STRAIGHT, true};
+	moves[UP_LEFT] = {Offsets::UP_LEFT, true};
+	moves[UP_RIGHT] = {Offsets::UP_RIGHT, true};
+	moves[DOWN_LEFT] = {Offsets::DOWN_LEFT, true};
+	moves[DOWN_RIGHT] = {Offsets::DOWN_RIGHT, true}; 
+	vector<int> validSquares;
+
+	if (0 <= position && position <= 7) {
+		moves[DOWN].second = false;
+		moves[DOWN_LEFT].second = false;
+		moves[DOWN_RIGHT].second = false;
+	}
+
+	if (position % 8 == 0) {
+		moves[UP_LEFT].second = false;
+		moves[LEFT].second = false;
+		moves[DOWN_LEFT].second = false;
+	}
+
+	if (position % 8 == 7) {
+		moves[UP_RIGHT].second = false;
+		moves[RIGHT].second = false;
+		moves[DOWN_RIGHT].second = false;
+	}
+
+	if (56 <= position && position <= 63) {
+		moves[UP].second = false;
+		moves[UP_RIGHT].second = false;
+		moves[UP_LEFT].second = false;
+	}
+
+	for (auto move : moves) {
+		if (move.second) {
+			if(!isAttackedSquare(color, position + move.first)) {
+				validSquares.push_back(position + move.first);
+			}
+		}
+	}
+
+	return validSquares;
 }

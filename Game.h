@@ -31,23 +31,27 @@ public:
 	}
 
 	vector<int> generateValidSquares(int piece, int position) {
+		int color = piece >> 3;
+
 		if (piece == Pieces::BLACK_ROOK ||
 			piece == Pieces::WHITE_ROOK ||
 			piece == Pieces::BLACK_BISHOP ||
 			piece == Pieces::WHITE_BISHOP ||
 			piece == Pieces::BLACK_QUEEN ||
 			piece == Pieces::WHITE_QUEEN) {
-				return history.front().generateValidSquaresSlidingPiece(piece, position);
+				return history.front().generateValidSquaresSlidingPiece(piece, position, "valid");
 		}
 
 		if (piece == Pieces::WHITE_PAWN || piece == Pieces::BLACK_PAWN) {
-				int color = piece >> 3;
-				return history.front().generateValidSquaresPawn(color, position);
+			return history.front().generateValidSquaresPawn(color, position);
 		}
 
 		if (piece == Pieces::WHITE_KNIGHT || piece == Pieces::BLACK_KNIGHT) {
-			int color = piece >> 3;
-			return history.front().generateValidSquaresHorse(color, position);
+			return history.front().generateValidSquaresHorse(color, position, "valid");
+		}
+
+		if (piece == Pieces::WHITE_KING || piece == Pieces::BLACK_KING) {
+			return history.front().generateValidSquaresKing(color, position);
 		}
 		return {};
 	}
@@ -73,7 +77,7 @@ Game::Game() {
 }
 
 Game::Game(const string& FEN) {
-	int endOfBoard = 0;
+	size_t endOfBoard = 0;
 	for (size_t i = 0; i < FEN.size(); ++i) {
 		if(FEN[i] == ' ') {
 			endOfBoard = i;
