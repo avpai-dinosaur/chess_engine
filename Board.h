@@ -178,15 +178,19 @@ void Board::calculateAttackedSquaresWhite() {
 		{
 		case Pieces::WHITE_QUEEN:
 			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			attackedSquares.push_back(squares);
 			break;
 		case Pieces::WHITE_ROOK:
 			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			attackedSquares.push_back(squares);
 			break;
 		case Pieces::WHITE_BISHOP:
 			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			attackedSquares.push_back(squares);
 			break;
 		case Pieces::WHITE_KNIGHT:
 			squares = generateValidSquaresHorse(boardArray[i], i, "attacked");
+			attackedSquares.push_back(squares);
 			break;
 		case Pieces::WHITE_PAWN:
 			if (56 <= i && i <= 63) {
@@ -202,11 +206,12 @@ void Board::calculateAttackedSquaresWhite() {
 			}
 			squares.push_back(i + Offsets::UP_RIGHT);
 			squares.push_back(i + Offsets::UP_LEFT);
+			attackedSquares.push_back(squares);
 			break;
 		default:
 			break;
 		}
-		attackedSquares.push_back(squares);
+		
 	}
 
 	for (size_t i = 0; i < attackedSquares.size(); ++i) {
@@ -224,15 +229,19 @@ void Board::calculateAttackedSquaresBlack() {
 		{
 		case Pieces::BLACK_QUEEN:
 			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			attackedSquares.push_back(squares);
 			break;
 		case Pieces::BLACK_ROOK:
 			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			attackedSquares.push_back(squares);
 			break;
 		case Pieces::BLACK_BISHOP:
 			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
+			attackedSquares.push_back(squares);
 			break;
 		case Pieces::BLACK_KNIGHT:
 			squares = generateValidSquaresHorse(boardArray[i], i, "attacked");
+			attackedSquares.push_back(squares);
 			break;
 		case Pieces::BLACK_PAWN:
 			if (0 <= i && i <= 7) {
@@ -248,11 +257,11 @@ void Board::calculateAttackedSquaresBlack() {
 			}
 			squares.push_back(i + Offsets::DOWN_LEFT);
 			squares.push_back(i + Offsets::DOWN_RIGHT);
+			attackedSquares.push_back(squares);
 			break;
 		default:
 			break;
 		}
-		attackedSquares.push_back(squares);
 	}
 
 	for (size_t i = 0; i < attackedSquares.size(); ++i) {

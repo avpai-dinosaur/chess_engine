@@ -24,10 +24,17 @@ public:
 			cout << "Not valid move!" << endl;
 			return;
 		}
+		int piece = history.front().getPiece(initial);
+		int color = piece >> 3;
+		if (color != playerTurn) {
+			cout << "Not valid move!" << endl;
+			return;
+		}
 		Board board = history.front();
 		board.movePiece(initial, destination);
 		history.push_front(board);
 		history.front().printBoard(cout);
+		playerTurn == Pieces::WHITE ? playerTurn = Pieces::BLACK : playerTurn = Pieces::WHITE; 
 	}
 
 	vector<int> generateValidSquares(int piece, int position) {
