@@ -58,7 +58,7 @@ public:
 		}
 
 		if (piece == Pieces::WHITE_KING || piece == Pieces::BLACK_KING) {
-			return history.front().generateValidSquaresKing(color, position);
+			return history.front().generateValidSquaresKing(color, position, "valid");
 		}
 		return {};
 	}

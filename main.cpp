@@ -4,10 +4,12 @@
 
 using namespace std;
 
-int main() {
-	const string FEN = "rnbqk1r/ppp1pppp/5n2/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3";
-	Game game(FEN);
-	
+int main(int argv, char** argc) {
+	Game game;
+	if (argv == 2) {
+		const string FEN = argc[1];
+		game = Game(FEN);
+	}
 	char piece;
 	int rowInitial;
 	char colInitial;

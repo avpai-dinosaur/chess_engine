@@ -73,7 +73,7 @@ public:
 	vector<int> generateValidSquaresSlidingPiece(int piece, int position, string mode);
 	vector<int> generateValidSquaresHorse(int color, int position, string mode);
 	vector<int> generateValidSquaresPawn(int color, int position);
-	vector<int> generateValidSquaresKing(int color, int position);
+	vector<int> generateValidSquaresKing(int color, int position, string mode);
 };
 
 Board::Board()
@@ -176,6 +176,10 @@ void Board::calculateAttackedSquaresWhite() {
 		vector<int> squares;
 		switch (boardArray[i])
 		{
+		case Pieces::WHITE_KING:
+			squares = generateValidSquaresKing(Pieces::BLACK, i, "atacked");
+			attackedSquares.push_back(squares);
+			break;
 		case Pieces::WHITE_QUEEN:
 			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
 			attackedSquares.push_back(squares);
@@ -189,7 +193,7 @@ void Board::calculateAttackedSquaresWhite() {
 			attackedSquares.push_back(squares);
 			break;
 		case Pieces::WHITE_KNIGHT:
-			squares = generateValidSquaresHorse(boardArray[i], i, "attacked");
+			squares = generateValidSquaresHorse(Pieces::WHITE, i, "attacked");
 			attackedSquares.push_back(squares);
 			break;
 		case Pieces::WHITE_PAWN:
@@ -227,6 +231,10 @@ void Board::calculateAttackedSquaresBlack() {
 		vector<int> squares;
 		switch (boardArray[i])
 		{
+		case Pieces::BLACK_KING:
+			squares = generateValidSquaresKing(Pieces::BLACK, i, "attacked");
+			attackedSquares.push_back(squares);
+			break;
 		case Pieces::BLACK_QUEEN:
 			squares = generateValidSquaresSlidingPiece(boardArray[i], i, "attacked");
 			attackedSquares.push_back(squares);
@@ -240,7 +248,7 @@ void Board::calculateAttackedSquaresBlack() {
 			attackedSquares.push_back(squares);
 			break;
 		case Pieces::BLACK_KNIGHT:
-			squares = generateValidSquaresHorse(boardArray[i], i, "attacked");
+			squares = generateValidSquaresHorse(Pieces::BLACK, i, "attacked");
 			attackedSquares.push_back(squares);
 			break;
 		case Pieces::BLACK_PAWN:
@@ -620,15 +628,15 @@ vector<int> Board::generateValidSquaresPawn(int color, int position) {
 	}
 }
 
-vector<int> Board::generateValidSquaresKing(int color, int position) {
-	const int UP = 1;
-	const int DOWN = 2;
-	const int LEFT = 3;
-	const int RIGHT = 4;
-	const int UP_LEFT = 5;
-	const int UP_RIGHT = 6;
-	const int DOWN_LEFT = 7;
-	const int DOWN_RIGHT = 8; 
+vector<int> Board::generateValidSquaresKing(int color, int position, string mode) {
+	const int UP = 0;
+	const int DOWN = 1;
+	const int LEFT = 2;
+	const int RIGHT = 3;
+	const int UP_LEFT = 4;
+	const int UP_RIGHT = 5;
+	const int DOWN_LEFT = 6;
+	const int DOWN_RIGHT = 7; 
 	vector<pair<int, bool>> moves(8);
 	moves[UP] = {Offsets::UP_STRAIGHT, true};
 	moves[DOWN] = {Offsets::DOWN_STRAIGHT, true};
@@ -666,8 +674,15 @@ vector<int> Board::generateValidSquaresKing(int color, int position) {
 
 	for (auto move : moves) {
 		if (move.second) {
-			if(!isAttackedSquare(color, position + move.first)) {
-				validSquares.push_back(position + move.first);
+			if (mode == "attacked") {
+				if(!isAttackedSquare(color, position + move.first)) {
+					validSquares.push_back(position + move.first);
+				}
+			}
+			else {
+				if(!isAttackedSquare(color, position + move.first) && !isFriendly(color, position + move.first)) {
+					validSquares.push_back(position + move.first);
+				}
 			}
 		}
 	}
