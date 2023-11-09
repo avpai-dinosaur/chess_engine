@@ -5,24 +5,47 @@
 using namespace std;
 
 int main(int argv, char** argc) {
-	Game game;
-	if (argv == 2) {
-		const string FEN = argc[1];
-		game = Game(FEN);
-	}
-	char piece;
-	int rowInitial;
-	char colInitial;
-	int rowDestination;
-	char colDestination;
-
-	while (true) {
+	if (argv == 1) {
+		Game game;
+		char piece;
+		int rowInitial;
+		char colInitial;
+		int rowDestination;
+		char colDestination;
 		cout << "Enter move (Ex: P d2 d3): " << endl;
-		cin >> piece >> colInitial >> rowInitial;
-		cin >> colDestination >> rowDestination;
-		game.move(rowInitial, colInitial, rowDestination, colDestination);
+		while (cin >> piece >> colInitial >> rowInitial >> colDestination >> rowDestination) {
+			game.move(rowInitial, colInitial, rowDestination, colDestination);
+			cout << "Enter move (Ex: P d2 d3): " << endl;
+		}
+
+		return 0;
 	}
-	
-	return 0;
+	else {
+		ifstream fin;
+		fin.open(argc[1]);
+
+		if (!fin.is_open()) {
+			cout << "failed to open " << argc[1] << endl;
+			return 1;
+		}
+
+		string FEN;
+		std::getline(fin, FEN);
+		Game game(FEN);
+
+		char piece;
+		int rowInitial;
+		char colInitial;
+		int rowDestination;
+		char colDestination;
+
+		cout << "Enter move (Ex: P d2 d3): " << endl;
+		while (fin >> piece >> colInitial >> rowInitial >> colDestination >> rowDestination) {
+			game.move(rowInitial, colInitial, rowDestination, colDestination);
+			cout << "Enter move (Ex: P d2 d3): " << endl;
+		}
+
+		return 0;
+	}
 }
 

@@ -37,6 +37,11 @@ public:
 		playerTurn == Pieces::WHITE ? playerTurn = Pieces::BLACK : playerTurn = Pieces::WHITE; 
 	}
 
+	void undoMove() {
+		history.pop_front();
+		history.front().printBoard(cout);
+	}
+
 	vector<int> generateValidSquares(int piece, int position) {
 		int color = piece >> 3;
 
@@ -74,6 +79,20 @@ public:
 		return false;
 	}
 
+	int perf(Board board, int depthTarget) {
+		if (depthTarget == 0) {
+			return 0;
+		}
+
+		vector<pair<int, int>> pieceVector = board.generatePieceVector();
+		for (size_t i = 0; i < pieceVector.size(); ++i) {
+			vector<int> validSquares = generateValidSquares(pieceVector[i].second, pieceVector[i].first);
+			for (size_t i = 0; i < validSquares.size(); ++i) {
+				board.movePiece(pieceVector[i].first, validSquares[i]);
+				return perf(board, depthTarget - 1) + 1;
+			}
+		}
+	}
 };
 
 Game::Game() {
