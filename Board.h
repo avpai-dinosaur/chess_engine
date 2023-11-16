@@ -69,7 +69,7 @@ public:
 	int getPieceColor(int position);
 	bool isFriendly(int color, int destination);
 	bool isAttackedSquare(int color, int square);
-	vector<pair<int, int>> generatePieceVector();
+	vector<pair<int, int>> generatePieceVector(int color);
 	void generateAlongDirection(vector<int>& validSquares, int color, int position, int offset, int *distanceMatrix, string mode);
 	vector<int> generateValidSquaresSlidingPiece(int piece, int position, string mode);
 	vector<int> generateValidSquaresHorse(int color, int position, string mode);
@@ -428,10 +428,10 @@ bool Board::isAttackedSquare(int color, int square) {
 	}
 }
 
-vector<std::pair<int, int>> Board::generatePieceVector() {
+vector<std::pair<int, int>> Board::generatePieceVector(int color) {
 	vector<std::pair<int, int>> pieceVector;
 	for (int i = 0; i < 64; ++i) {
-		if (boardArray[i] != Pieces::NO_PIECE) {
+		if (boardArray[i] != Pieces::NO_PIECE && getPieceColor(i) == color) {
 			pieceVector.push_back({i, boardArray[i]});
 		}
 	}

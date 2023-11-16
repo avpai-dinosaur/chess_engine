@@ -12,6 +12,7 @@ int main(int argv, char** argc) {
 		char colInitial;
 		int rowDestination;
 		char colDestination;
+		game.perft(game.history.front(), 4);
 		cout << "Enter move (Ex: P d2 d3): " << endl;
 		while (cin >> piece >> colInitial >> rowInitial >> colDestination >> rowDestination) {
 			game.move(rowInitial, colInitial, rowDestination, colDestination);

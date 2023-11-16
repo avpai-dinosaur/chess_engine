@@ -37,9 +37,30 @@ public:
 		playerTurn == Pieces::WHITE ? playerTurn = Pieces::BLACK : playerTurn = Pieces::WHITE; 
 	}
 
+	void move(int initial, int destination) {
+		if (!isValidMove(initial, destination)) {
+			cout << "Not valid move!" << endl;
+			return;
+		}
+		int piece = history.front().getPiece(initial);
+		int color = piece >> 3;
+		
+		if (color != playerTurn) {
+			cout << "Not valid move!" << endl;
+			return;
+		}
+		
+		Board board = history.front();
+		board.movePiece(initial, destination);
+		history.push_front(board);
+		history.front().printBoard(cout);
+		playerTurn == Pieces::WHITE ? playerTurn = Pieces::BLACK : playerTurn = Pieces::WHITE; 
+	}
+
 	void undoMove() {
 		history.pop_front();
-		history.front().printBoard(cout);
+		if (playerTurn == 0) playerTurn = 1;
+		else playerTurn = 0;
 	}
 
 	vector<int> generateValidSquares(int piece, int position) {
@@ -79,19 +100,24 @@ public:
 		return false;
 	}
 
-	int perf(Board board, int depthTarget) {
+	int perft(Board board, int depthTarget) {
 		if (depthTarget == 0) {
-			return 0;
+			return 1;
 		}
+		int nodes = 0;
 
-		vector<pair<int, int>> pieceVector = board.generatePieceVector();
+		vector<pair<int, int>> pieceVector = board.generatePieceVector(playerTurn);
 		for (size_t i = 0; i < pieceVector.size(); ++i) {
 			vector<int> validSquares = generateValidSquares(pieceVector[i].second, pieceVector[i].first);
-			for (size_t i = 0; i < validSquares.size(); ++i) {
-				board.movePiece(pieceVector[i].first, validSquares[i]);
-				return perf(board, depthTarget - 1) + 1;
+			for (size_t j = 0; j < validSquares.size(); ++j) {
+				move(pieceVector[i].first, validSquares[j]);
+				nodes += perft(history.front(), depthTarget - 1);
+				undoMove();
 			}
 		}
+
+		cout << "nodes to depth " << depthTarget << " = " << nodes << endl;
+		return nodes;
 	}
 };
 
