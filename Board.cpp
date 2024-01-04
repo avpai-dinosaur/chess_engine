@@ -31,13 +31,19 @@ Board::Board()
 		}
 	}
 
+	blackKingSideCastle = true;
+	blackQueenSideCastle = true;
+	whiteKingSideCastle = true;
+	whiteQueenSideCastle = true;
+
 	boardInit();
 }
 
 Board::Board(const string& FEN) {
 	int row = 7; 
 	int col = 0;
-	for (size_t i = 0; i < FEN.size(); ++i) {
+	size_t i = 0;
+	for (i; i < FEN.size(); ++i) {
 		if (FEN[i] == ' ') {
 			break;
 		}
@@ -49,8 +55,6 @@ Board::Board(const string& FEN) {
 		}
 
 		if (48 <= FEN[i] && FEN[i] <= 57) {
-			// int x = int(FEN[i]) - 48;
-			// std::cout << x << endl;
 			for (int j = 0; j < int(FEN[i]) - 48; ++j) {
 				boardArray[row * 8 + col] = Pieces::NO_PIECE;
 				++col;
@@ -61,6 +65,37 @@ Board::Board(const string& FEN) {
 		boardArray[8 * row + col] = charToPiece(FEN[i]);
 		++col;
 	}
+	// Once we exit the loop have reached end of board info
+	
+	// Skip past data of whose turn it is, 
+	// that will be handled by Engine class
+	i += 3;
+
+	blackKingSideCastle = false;
+	blackQueenSideCastle = false;
+	whiteKingSideCastle = false;
+	whiteQueenSideCastle = false;
+
+	while (FEN[i] != ' ') {
+		switch (FEN[i])
+		{
+		case 'K':
+			whiteKingSideCastle = true;
+			break;
+		case 'Q':
+			whiteQueenSideCastle = true;
+			break;
+		case 'k':
+			blackKingSideCastle = true;
+			break;
+		case 'q':
+			blackKingSideCastle = true;
+			break;
+		default:
+			break;
+		}
+		++i;
+	}
 
 	boardInit();
 }
@@ -69,6 +104,11 @@ Board::Board(const Board& board) {
 	for (int i = 0; i < 64; ++i) {
 		boardArray[i] = board.boardArray[i];
 	}
+
+	blackKingSideCastle = board.blackKingSideCastle;
+	blackQueenSideCastle = board.blackQueenSideCastle;
+	whiteKingSideCastle = board.whiteKingSideCastle;
+	whiteQueenSideCastle = board.whiteQueenSideCastle;
 
 	boardInit();
 }

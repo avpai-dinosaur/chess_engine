@@ -16,6 +16,13 @@ private:
 	bool attackedSquaresWhite[64];
 	bool attackedSquaresBlack[64];
 
+	bool blackQueenSideCastle;
+	bool blackKingSideCastle;
+	bool whiteQueenSideCastle;
+	bool whiteKingSideCastle;
+
+	int enPassantSquare;
+
 	// helpful pre-processing functions
 	void calculateDistanceArrays();
 	void calculateAttackedSquaresWhite();
