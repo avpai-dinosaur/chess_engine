@@ -640,6 +640,12 @@ vector<int> Board::generateRayPawn(int color, int position)
 			}
 		}
 
+		// check en_passant
+		if ((position + Offsets::DOWN_LEFT == enPassantSquare) || (position + Offsets::DOWN_RIGHT == enPassantSquare))
+		{
+			validSquares.push_back(enPassantSquare);
+		}
+
 		return validSquares;
 	}
 	else if (color == Pieces::WHITE)
@@ -686,6 +692,12 @@ vector<int> Board::generateRayPawn(int color, int position)
 			{
 				validSquares.push_back(position + 8 - 1);
 			}
+		}
+
+		// check en_passant
+		if ((position + Offsets::UP_LEFT == enPassantSquare) || (position + Offsets::UP_RIGHT == enPassantSquare))
+		{
+			validSquares.push_back(enPassantSquare);
 		}
 
 		return validSquares;

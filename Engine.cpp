@@ -72,6 +72,16 @@ bool Engine::move(int initial, int destination)
 	return true;
 }
 
+bool Engine::userMove(std::string piece, std::string initial, std::string destination)
+{
+	int rowInitial = initial[1] - '0';
+	char colInitial = initial[0];
+	int rowDestination = destination[1] - '0';
+	char colDestination = destination[0];
+	pair<int, int> move = parseUserInput(rowInitial, colInitial, rowDestination, colDestination);
+	return this->move(move.first, move.second);
+}
+
 void Engine::undoMove()
 {
 	history.pop_front();

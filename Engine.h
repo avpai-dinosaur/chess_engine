@@ -17,6 +17,7 @@ public:
 	Board getCurrentPosition();
 	pair<int, int> parseUserInput(int rowInitial, int colInitial, int rowDestination, int colDestination);
 	bool move(int initial, int destination);
+	bool userMove(std::string piece, std::string initial, std::string destination);
 	void undoMove();
 	int perft(Board board, int depthTarget);
 };
