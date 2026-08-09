@@ -37,14 +37,32 @@ class Move(NamedTuple):
     promotion: str | None = None
 
 
+class Castle(NamedTuple):
+    queen_side: bool = True
+    king_side: bool = True
+
+
 class Position(NamedTuple):
     board: str = START_BOARD
     en_passant_square: int | None = None
-    queen_side_castle: bool = True
-    king_side_castle: bool = True
+    white_castle: Castle = Castle()
+    black_castle: Castle = Castle()
+
+    def get_square(self, file_char: str, rank: int) -> int:
+        file_idx = ord(file_char) - ord("a") + 1
+        rank = rank - 1
+        rank = rank + 2
+        rank = 11 - rank
+        return rank * 10 + file_idx
 
     def rotate_board(self):
-        return self.board[::-1].swapcase()
+        return Position(
+            self.board[::-1].swapcase(), 
+            119 - self.en_passant_square if self.en_passant_square != None else None,
+            self.black_castle,
+            self.white_castle
+        )
+
 
     def get_pseudo_legal_moves(self):
         for start_square, piece in enumerate(self.board):
@@ -63,7 +81,7 @@ class Position(NamedTuple):
                         if direction in (NORTH, NORTH * 2) and target != ".":
                             break
                         # Pawn can only move forward twice if its on start rank
-                        if direction == NORTH * 2 and (start_square > 89 or self.board[start_square + NORTH] != "."):
+                        if direction == NORTH * 2 and (start_square <= 80 or self.board[start_square + NORTH] != "."):
                             break
                         # Pawn can only move diagonal to capture an enemy piece or for en passant
                         if direction in (NORTH + EAST, NORTH + WEST) and target not in "prnbqk" and end_square != self.en_passant_square:
@@ -132,8 +150,8 @@ def parse_fen(fen):
         board += " "
     board += buffer_rank * 2
 
-    queen_side_castle = "Q" in fen[2]
-    king_side_castle = "K" in fen[2]
+    white_castle = Castle("Q" in fen[2], "K" in fen[2])
+    black_castle = Castle("q" in fen[2], "k" in fen[2])
 
     if fen[3] == "-":
         en_passant_square = None
@@ -145,7 +163,8 @@ def parse_fen(fen):
         col = file + 1
         en_passant_square = row * 10 + col
 
-    return Position(board, en_passant_square, queen_side_castle, king_side_castle)
+    return Position(board, en_passant_square, white_castle, black_castle)
         
+
 if __name__ == "__main__":
     parse_fen("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2").print()
