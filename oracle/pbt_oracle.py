@@ -1,11 +1,6 @@
 from hypothesis import given, strategies as st
 
-from oracle import (
-    print_board,
-    fen_to_board,
-    get_pseudo_legal_moves,
-    get_all_pseudo_legal_moves
-)
+import oracle as eng
 
 
 @st.composite
@@ -55,8 +50,9 @@ def fen_string(draw):
 
 @given(fen_string())
 def test_hypothesis_pseudolegal_moves(fen):
-    board = fen_to_board(fen)
-    get_all_pseudo_legal_moves(board)
+    position = eng.parse_fen(fen)
+    for mv in position.get_pseudo_legal_moves():
+        print(mv)
 
 
 if __name__ == "__main__":
